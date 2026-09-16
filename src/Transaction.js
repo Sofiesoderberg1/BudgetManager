@@ -16,3 +16,4 @@ this.category = category
 this.date = date
 }
 }
+ module.exports = Transaction
