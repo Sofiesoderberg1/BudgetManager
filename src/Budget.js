@@ -6,12 +6,18 @@ class Budget {
 
     this.transactions = []
 
+    this.nextId = 1
+
 }
     
 
 addTransaction(description, amount, type, category)
     {
-    const id = this.transactions.length + 1
+        if (type !== "income" && type !== "outcome")
+        throw new Error("Type must be income or outcome")
+        amount = Math.abs(amount)
+    const id = this.nextId 
+    this.nextId = this.nextId + 1
     const date = new Date()
     const transaction = new Transaction(
         id,
@@ -30,10 +36,17 @@ addTransaction(description, amount, type, category)
 
 
 
-removeTransaction() {
+removeTransaction(id) {
+     for (let i = 0; i < this.transactions.length; i++){
+         const transaction = this.transactions[i]
+    if (transaction.id === id) {
+        this.transactions.splice(i, 1)
+
 
 }
+     }
 
+    }
 getBalance(){
 let balance = 0
 for (let i = 0; i < this.transactions.length; i++){
@@ -74,11 +87,29 @@ if (transaction.type === "outcome"){
 
 return totalExpenses 
 }
-getTransactionsByCategory(){
+
+getTransactionsByCategory(category){
+let transactions = []
+for (let i = 0; i < this.transactions.length; i++) {
+    const transaction = this.transactions[i]
+    if (transaction.category === category) {
+        transactions.push(transaction)
+
+}
+}
+return transactions
 
 }
 
 getSummary(){
+    let summary = []
+
+     summary.push(this.getBalance())
+         summary.push(this.getTotalIncome())
+    summary.push(this.getTotalExpenses())
+
+
+     return summary
 
 }
 }
