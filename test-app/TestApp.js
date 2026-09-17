@@ -26,3 +26,8 @@ console.log(budget.getSummary())
 //budget.addTransaction("Test", 100, "banana", "test")
 budget.addTransaction("Test", -200, "outcome", "test")
 console.log(budget.transactions)
+
+const startDate = new Date(2026, 8, 1)
+const endDate = new Date(2026, 8, 30)
+
+console.log(budget.getTransactionsByDateRange(startDate, endDate))
