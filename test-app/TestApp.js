@@ -10,3 +10,15 @@ budget.addTransaction("Salary", 2000, "income", "salary")
 budget.addTransaction("Extra work", 500, "income", "work")
 console.log(budget.getTotalIncome())
 console.log(budget.getTotalExpenses())
+
+budget.removeTransaction(1)
+
+console.log(budget.transactions)
+
+budget.addTransaction("Groceries", 300, "outcome", "food")
+
+console.log(budget.transactions)
+
+console.log(budget.getTransactionsByCategory("food"))
+
+
