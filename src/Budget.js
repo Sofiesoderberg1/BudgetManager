@@ -112,5 +112,67 @@ getSummary(){
      return summary
 
 }
+
+
+getTransactionsByDateRange(startDate, endDate) {
+let transactions = []
+for (let i = 0; i < this.transactions.length; i++) {
+    const transaction = this.transactions[i]
+    if (transaction.date >= startDate && transaction.date <= endDate) {
+        transactions.push(transaction)
+    
 }
+}
+return transactions
+
+}
+
+
+getTransactionsByType(type){
+let transactions = []
+for (let i = 0; i < this.transactions.length; i++) {
+    const transaction = this.transactions[i]
+    if (transaction.type === type) {
+        transactions.push(transaction)
+}
+}
+return transactions
+}
+
+
+getLargestExpense() {
+    let largestExpense = 0
+
+    for (let i = 0; i < this.transactions.length; i++) {
+        const transaction = this.transactions[i]
+
+        if (transaction.type === "outcome") {
+            if (transaction.amount > largestExpense) {
+                largestExpense = transaction.amount
+            }
+        }
+    }
+
+    return largestExpense
+}
+
+
+getCategorySummary() {
+    let categorySummary = {}
+
+    for (let i = 0; i < this.transactions.length; i++) {
+        const transaction = this.transactions[i]
+
+        if (categorySummary[transaction.category]) {
+            categorySummary[transaction.category] =
+                categorySummary[transaction.category] + transaction.amount
+        } else {
+            categorySummary[transaction.category] = transaction.amount
+        }
+    }
+
+    return categorySummary
+}
+}
+
  module.exports = Budget
