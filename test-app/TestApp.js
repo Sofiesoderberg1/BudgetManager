@@ -27,7 +27,14 @@ console.log(budget.getSummary())
 budget.addTransaction("Test", -200, "outcome", "test")
 console.log(budget.transactions)
 
+console.log(budget.getTransactionsByType("income"))
+
 const startDate = new Date(2026, 8, 1)
 const endDate = new Date(2026, 8, 30)
 
 console.log(budget.getTransactionsByDateRange(startDate, endDate))
+
+console.log(budget.getTransactionsByType("income"))
+console.log(budget.getLargestExpense())
+budget.addTransaction("Lunch", 100, "outcome", "food")
+console.log(budget.getCategorySummary())
