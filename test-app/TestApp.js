@@ -38,3 +38,5 @@ console.log(budget.getTransactionsByType("income"))
 console.log(budget.getLargestExpense())
 budget.addTransaction("Lunch", 100, "outcome", "food")
 console.log(budget.getCategorySummary())
+
+console.log(budget.getLargestExpenseCategory())
