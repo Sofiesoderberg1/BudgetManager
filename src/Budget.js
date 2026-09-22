@@ -173,6 +173,20 @@ getCategorySummary() {
 
     return categorySummary
 }
-}
 
+
+getLargestExpenseCategory(){
+  const categorySummary = this.getCategorySummary()
+  let largestCategory = ""
+  let largestAmount = 0
+
+  for(let category of Object.keys(categorySummary)) {
+    if (categorySummary [category] > largestAmount) {
+        largestAmount = categorySummary[category]
+        largestCategory = category
+}
+  }
+return largestCategory
+}
+}
  module.exports = Budget
