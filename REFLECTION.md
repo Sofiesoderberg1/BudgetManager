@@ -12,7 +12,7 @@ One possible improvement is that some names could be made more consistent if the
 
 | Identifier | Rule from Clean Code | Reflection |
 |---|---|---|
-| `Budget` | Use Solution Domain Names | `Budget` clearly describes the main object in the module. A programmer can understand that the class represents the budget without reading the implementation. |
+| `Budget` | Use Problem Domain Names | `Budget` clearly describes the main object in the module. A programmer can understand that the class represents the budget without reading the implementation. |
 | `Transaction` | Use Problem Domain Names | `Transaction` is a common concept in the problem domain of personal budgeting. The name makes it clear that the object represents one financial transaction. |
 | `getBalance` | Intention-Revealing Names | The name clearly reveals what the method does. It returns the current balance of the budget. |
 | `getTransactionsByCategory` | Pick One Word per Concept | The method uses consistent terminology with `transactions` and `category`. The name also clearly describes that transactions are selected based on their category. |
@@ -27,11 +27,11 @@ I also noticed that some names could be more descriptive. For example, `id` coul
 
 | Method | Rule from Clean Code | Reflection |
 |---|---|---|
-| `getTotalExpenses` | Small Functions | The method is short and has one clear purpose. It goes through the transactions and calculates the total expenses. I do not think it needs to be divided into smaller methods. |
-| `getTransactionsByCategory` | Small Functions | The method is relatively short and has one clear purpose: returning transactions that belong to a specific category. It does not perform additional calculations or modify the budget. |
-| `getTransactionsByDateRange` | Function Arguments | The method has two arguments, `startDate` and `endDate`. Both are necessary because a date range needs a beginning and an end. The method would be harder to use if the arguments were unclear. |
-| `getLargestExpense` | One Thing | The method has one responsibility: finding the largest expense. The nested `if` statements make it slightly more complicated, but the method still has a clear purpose. |
+| `addTransaction` | Small Functions | The method has one main responsibility: adding a transaction. It also validates the transaction type and handles the amount before creating the transaction. It is one of the longer methods in the module, so it could potentially be divided into smaller methods in the future. |
+| `getLargestExpenseCategory` | One Thing | The method has one clear responsibility: finding the category with the largest total. It uses `getCategorySummary()` to get the category totals instead of calculating them again. |
+| `getBalance` | Small Functions | The method is relatively short and has one clear purpose: calculating the current balance. It goes through the transactions and adds or subtracts the amounts depending on the transaction type. |
 | `getCategorySummary` | One Thing | The method creates a summary of transaction amounts grouped by category. It has one main responsibility, but the repeated access to `categorySummary` makes the method slightly harder to read. |
+| `getTotalExpenses` | Small Functions | The method is short and has one clear purpose. It goes through the transactions and calculates the total expenses. I do not think it needs to be divided into smaller methods. |
 
 ### Reflection on Method Length
 
@@ -53,8 +53,18 @@ One thing I have improved is my use of descriptive names. For example, I underst
 
 I have also learned that code does not have to be perfect to be understandable. It is important that another programmer can understand what the code does and how to use the module. In the future, I want to think about code quality while writing the code instead of only reviewing it afterwards.
 
+## 4. Writing a Module
+
+Writing a module for other programmers was different from writing an application for end users. I had to think more about how another programmer would use the code and what information they would need in order to understand the module. This made the README and the method names more important because there is no graphical interface explaining how the module works.
+
+I also had to think about what the module should and should not do. BudgetManager is intended to provide functionality for managing budget transactions, but it does not provide a user interface, database or bank connection. The programmer using the module provides the transaction data.
+
+The USP did not change significantly during the project. The main idea was from the beginning to create a simple JavaScript module for programmers to manage income and expenses. During the development, I added more functionality such as filtering transactions, category summaries and finding the largest expense category. These additions expanded the functionality of the module, but they did not change its main purpose.
+
 ## AI Collaboration
 
 I used AI as a sounding board during the development of the module. I used it to get ideas, understand different steps, decide what to work on next, troubleshoot problems and ask questions.
 
 It was important to me that I learned the code myself instead of receiving the complete solution directly. I therefore used AI more like a teacher who could guide me and help me understand the problems step by step. I wanted to understand why the code worked and be able to explain the code myself.
+
+I used AI differently in this laboratory compared with laboratory 1. Since this was a larger module, I used AI more for discussing design decisions, testing and code quality. I also used it to review my code and help me identify possible improvements. At the same time, I tried to avoid using AI to write complete solutions because I wanted to understand and be able to explain the code myself.
