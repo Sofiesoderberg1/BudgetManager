@@ -17,4 +17,4 @@
 | Filter by type | Added income and outcome transactions and used `getTransactionsByType()`. | Passed |
 | Find largest expense | Added multiple expenses and used `getLargestExpense()`. | Passed |
 | Summarize by category | Added multiple transactions, including two food expenses, and used `getCategorySummary()`. | Passed |
-| Find largest category | Added transactions in different categories and used `getLargestExpenseCategory()` to find the category with the highest total. | Passed |wc -l ../src/Budget.js ../src/Transaction.js
+| Find largest category | Added transactions in different categories and used `getLargestExpenseCategory()` to find the category with the highest total. | Passed |

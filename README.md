@@ -18,6 +18,11 @@ The module allows programmers to:
 - filter transactions by type
 - find the largest expense
 - create summaries of transactions
+- find the category with the largest total
+
+## What the module does not do
+
+BudgetManager does not provide a user interface, database, bank connection or external service integration. It is a programmer-facing module where the programmer provides the transaction data.
 
 ## Example
 
@@ -66,3 +71,4 @@ node TestApp.js
 ```
 
 More information about the tests can be found in TEST_REPORT.md.
+
