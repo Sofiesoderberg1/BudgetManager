@@ -44,3 +44,10 @@ budget.addTransaction("Lunch", 100, "outcome", "food");
 console.log(budget.getCategorySummary());
 
 console.log(budget.getLargestExpenseCategory());
+
+console.log("Total food:", budget.getTotalByCategory("food"));
+
+console.log(
+  "Transactions above 400:",
+  budget.getTransactionsAboveAmount(400),
+);
