@@ -20,3 +20,7 @@
 | Find largest category | Added transactions in different categories and used `getLargestExpenseCategory()` to find the category with the highest total. | Passed |
 | Get total by category | Added transactions with the same category and used getTotalByCategory() to check the total amount.| Passed |
 | Filter transactions by amount | Added transactions with different amounts and used getTransactionsAboveAmount() to find transactions above a specified amount. | Passed |
+| Validate description | Tried to add transactions with an empty description and a description containing only spaces. | Passed |
+| Validate amount | Tried to add transactions with a text amount and `NaN`. | Passed |
+| Handle negative amount | Added a transaction with a negative amount and checked that it was converted to a positive value. | Passed |
+| Remove transaction | Added two transactions, removed one, and checked that the remaining transaction and balance were correct. | Passed |

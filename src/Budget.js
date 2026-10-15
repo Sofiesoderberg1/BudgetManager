@@ -11,26 +11,37 @@ class Budget {
   }
 
   addTransaction(description, amount, type, category) {
-    if (type !== "income" && type !== "outcome")
-      throw new Error("Type must be income or outcome");
-
-    // Store the amount as positive; the transaction type determines
-    // whether it is added to or subtracted from the balance.
-    amount = Math.abs(amount);
-    const id = this.nextId;
-    this.nextId = this.nextId + 1;
-    const date = new Date();
-    const transaction = new Transaction(
-      id,
-      description,
-      amount,
-      type,
-      category,
-      date,
-    );
-
-    this.transactions.push(transaction);
+  if (typeof description !== "string" || description.trim() === "") {
+    throw new Error("Description must not be empty");
   }
+
+  if (typeof amount !== "number" || !Number.isFinite(amount)) {
+    throw new Error("Amount must be a valid number");
+  }
+
+  if (type !== "income" && type !== "outcome") {
+    throw new Error("Type must be income or outcome");
+  }
+
+  // Store the amount as positive; the transaction type determines
+  // whether it is added to or subtracted from the balance.
+  amount = Math.abs(amount);
+
+  const id = this.nextId;
+  this.nextId = this.nextId + 1;
+  const date = new Date();
+
+  const transaction = new Transaction(
+    id,
+    description,
+    amount,
+    type,
+    category,
+    date,
+  );
+
+  this.transactions.push(transaction);
+}
 
   removeTransaction(id) {
      const index = this.transactions.findIndex(
@@ -47,7 +58,6 @@ class Budget {
     for (let i = 0; i < this.transactions.length; i++) {
       const transaction = this.transactions[i];
 
-      // Income increases the balance and outcome decreases it.
       if (transaction.type === "income") {
         balance = balance + transaction.amount;
       }
@@ -175,7 +185,6 @@ class Budget {
     for (let i = 0; i < this.transactions.length; i++) {
       const transaction = this.transactions[i];
 
-      // Add each transaction amount to its category total.
       if (categorySummary[transaction.category]) {
         categorySummary[transaction.category] =
           categorySummary[transaction.category] + transaction.amount;
@@ -188,7 +197,6 @@ class Budget {
   }
 
   getLargestExpenseCategory() {
-    // Find the category with the highest total amount.
     const categorySummary = this.getCategorySummary();
 
     if (Object.keys(categorySummary).length === 0) {
@@ -198,7 +206,6 @@ class Budget {
     let largestCategory = "";
     let largestAmount = 0;
 
-    // Compare each category total to find the largest one.
     for (let category of Object.keys(categorySummary)) {
       const categoryAmount = categorySummary[category];
 

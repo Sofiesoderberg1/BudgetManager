@@ -68,3 +68,37 @@ assert.equal(removalBudget.transactions[0].description, "Food");
 assert.equal(removalBudget.getBalance(), -200);
 
 console.log("Test passed: removeTransaction removes only the selected transaction.");
+
+
+ // Test validation of description and amount.
+const validationBudget = new Budget();
+
+// Empty description should be rejected.
+assert.throws(
+  () => validationBudget.addTransaction("", 100, "income", "salary"),
+  /Description must not be empty/,
+);
+
+// Description containing only spaces should be rejected.
+assert.throws(
+  () => validationBudget.addTransaction("   ", 100, "income", "salary"),
+  /Description must not be empty/,
+);
+
+// Text amount should be rejected.
+assert.throws(
+  () => validationBudget.addTransaction("Salary", "100", "income", "salary"),
+  /Amount must be a valid number/,
+);
+
+// NaN should be rejected.
+assert.throws(
+  () => validationBudget.addTransaction("Salary", NaN, "income", "salary"),
+  /Amount must be a valid number/,
+);
+
+// Negative amounts should still be accepted as positive amounts.
+validationBudget.addTransaction("Food", -200, "outcome", "food");
+assert.equal(validationBudget.transactions[0].amount, 200);
+
+console.log("Test passed: description and amount validation.");
