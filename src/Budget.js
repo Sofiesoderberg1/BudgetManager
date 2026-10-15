@@ -33,13 +33,15 @@ class Budget {
   }
 
   removeTransaction(id) {
-    for (let i = 0; i < this.transactions.length; i++) {
-      const transaction = this.transactions[i];
-      if (transaction.id === id) {
-        this.transactions.splice(i, 1);
+     const index = this.transactions.findIndex(
+      (transaction) => transaction.id === id,
+    );
+
+    if (index !== -1) {
+      this.transactions.splice(index, 1);
       }
     }
-  }
+
   getBalance() {
     let balance = 0;
     for (let i = 0; i < this.transactions.length; i++) {
@@ -91,6 +93,33 @@ class Budget {
     return transactions;
   }
 
+  getTotalByCategory(category) {
+    let total = 0;
+
+    for (let i = 0; i < this.transactions.length; i++) {
+      const transaction = this.transactions[i];
+
+      if (transaction.category === category) {
+        total = total + transaction.amount;
+      }
+    }
+
+    return total;
+  }
+
+  getTransactionsAboveAmount(amount) {
+    let transactions = [];
+
+    for (let i = 0; i < this.transactions.length; i++) {
+      const transaction = this.transactions[i];
+
+      if (transaction.amount > amount) {
+        transactions.push(transaction);
+      }
+    }
+
+    return transactions;
+  }
   getSummary() {
     let summary = [];
 

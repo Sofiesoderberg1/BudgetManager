@@ -51,3 +51,20 @@ console.log(
   "Transactions above 400:",
   budget.getTransactionsAboveAmount(400),
 );
+
+
+const assert = require("node:assert/strict");
+
+// Test that removing a transaction keeps the other transactions.
+const removalBudget = new Budget();
+
+removalBudget.addTransaction("Salary", 2000, "income", "salary");
+removalBudget.addTransaction("Food", 200, "outcome", "food");
+
+removalBudget.removeTransaction(1);
+
+assert.equal(removalBudget.transactions.length, 1);
+assert.equal(removalBudget.transactions[0].description, "Food");
+assert.equal(removalBudget.getBalance(), -200);
+
+console.log("Test passed: removeTransaction removes only the selected transaction.");

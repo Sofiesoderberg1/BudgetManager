@@ -18,3 +18,5 @@
 | Find largest expense | Added multiple expenses and used `getLargestExpense()`. | Passed |
 | Summarize by category | Added multiple transactions, including two food expenses, and used `getCategorySummary()`. | Passed |
 | Find largest category | Added transactions in different categories and used `getLargestExpenseCategory()` to find the category with the highest total. | Passed |
+| Get total by category | Added transactions with the same category and used getTotalByCategory() to check the total amount.| Passed |
+| Filter transactions by amount | Added transactions with different amounts and used getTransactionsAboveAmount() to find transactions above a specified amount. | Passed |
