@@ -1,221 +1,371 @@
-const Transaction = require("./Transaction.js");
+import Transaction from "./Transaction.js";
 
-class Budget {
+/**
+ * Manages income and expenses for a personal budget.
+ */
+export default class Budget {
+  #transactions;
+  #nextId;
+
   constructor() {
     this.name = "SeptemberBudget";
-
-    this.transactions = [];
-
-    // Use a separate counter so removed transactions do not cause duplicate IDs.
-    this.nextId = 1;
+    this.#transactions = [];
+    this.#nextId = 1;
   }
 
+  /**
+   * Provides read-only access to the current transaction list.
+   * A new array prevents callers from adding or removing internal entries.
+   */
+  get transactions() {
+    return [...this.#transactions];
+  }
+
+  /**
+   * Validates a description before a transaction is created.
+   * @param {string} description - Text describing the transaction.
+   */
+  #validateDescription(description) {
+    if (typeof description !== "string" || description.trim() === "") {
+      throw new Error("Description must not be empty");
+    }
+  }
+
+  /**
+   * Validates the amount before a transaction is created.
+   * @param {number} amount - Transaction amount.
+   */
+  #validateAmount(amount) {
+    if (typeof amount !== "number" || !Number.isFinite(amount)) {
+      throw new Error("Amount must be a valid number");
+    }
+  }
+
+  /**
+   * Validates the transaction type.
+   * @param {string} type - Must be income or outcome.
+   */
+  #validateType(type) {
+    if (type !== "income" && type !== "outcome") {
+      throw new Error("Type must be income or outcome");
+    }
+  }
+
+  /**
+   * Validates that a date range contains valid Date objects in order.
+   * @param {Date} startDate - First date in the range.
+   * @param {Date} endDate - Last date in the range.
+   */
+  #validateDateRange(startDate, endDate) {
+    if (!(startDate instanceof Date) || Number.isNaN(startDate.getTime())) {
+      throw new Error("Start date must be a valid Date");
+    }
+    if (!(endDate instanceof Date) || Number.isNaN(endDate.getTime())) {
+      throw new Error("End date must be a valid Date");
+    }
+    if (startDate > endDate) {
+      throw new Error("Start date must not be after end date");
+    }
+  }
+
+  /**
+   * Adds a transaction to the budget.
+   * @param {string} description - Description of the transaction.
+   * @param {number} amount - Amount to add; negative values are stored as positive.
+   * @param {"income"|"outcome"} type - Whether the transaction is income or expense.
+   * @param {string} category - Category assigned to the transaction.
+   * @returns {Transaction} The transaction that was added.
+   */
   addTransaction(description, amount, type, category) {
-  if (typeof description !== "string" || description.trim() === "") {
-    throw new Error("Description must not be empty");
+    this.#validateDescription(description);
+    this.#validateAmount(amount);
+    this.#validateType(type);
+
+    const storedAmount = Math.abs(amount);
+    const transaction = new Transaction(
+      this.#nextId,
+      description,
+      storedAmount,
+      type,
+      category,
+      new Date(),
+    );
+
+    this.#nextId += 1;
+    this.#transactions.push(transaction);
+    return transaction;
   }
 
-  if (typeof amount !== "number" || !Number.isFinite(amount)) {
-    throw new Error("Amount must be a valid number");
-  }
-
-  if (type !== "income" && type !== "outcome") {
-    throw new Error("Type must be income or outcome");
-  }
-
-  // Store the amount as positive; the transaction type determines
-  // whether it is added to or subtracted from the balance.
-  amount = Math.abs(amount);
-
-  const id = this.nextId;
-  this.nextId = this.nextId + 1;
-  const date = new Date();
-
-  const transaction = new Transaction(
-    id,
-    description,
-    amount,
-    type,
-    category,
-    date,
-  );
-
-  this.transactions.push(transaction);
-}
-
+  /**
+   * Removes a transaction using its ID.
+   * @param {number} id - ID of the transaction to remove.
+   * @returns {boolean} True when a transaction was removed.
+   */
   removeTransaction(id) {
-     const index = this.transactions.findIndex(
+    const index = this.#transactions.findIndex(
       (transaction) => transaction.id === id,
     );
 
-    if (index !== -1) {
-      this.transactions.splice(index, 1);
-      }
+    if (index === -1) {
+      return false;
     }
 
+    this.#transactions.splice(index, 1);
+    return true;
+  }
+
+  /**
+   * Calculates the current balance.
+   * @returns {number} Income minus expenses.
+   */
   getBalance() {
     let balance = 0;
-    for (let i = 0; i < this.transactions.length; i++) {
-      const transaction = this.transactions[i];
 
+    for (const transaction of this.#transactions) {
       if (transaction.type === "income") {
-        balance = balance + transaction.amount;
-      }
-      if (transaction.type === "outcome") {
-        balance = balance - transaction.amount;
+        balance += transaction.amount;
+      } else if (transaction.type === "outcome") {
+        balance -= transaction.amount;
       }
     }
+
     return balance;
   }
 
+  /**
+   * Calculates the total income.
+   * @returns {number} Sum of all income transactions.
+   */
   getTotalIncome() {
     let totalIncome = 0;
-    for (let i = 0; i < this.transactions.length; i++) {
-      const transaction = this.transactions[i];
+
+    for (const transaction of this.#transactions) {
       if (transaction.type === "income") {
-        totalIncome = totalIncome + transaction.amount;
+        totalIncome += transaction.amount;
       }
     }
+
     return totalIncome;
   }
 
+  /**
+   * Calculates the total expenses.
+   * @returns {number} Sum of all expense transactions.
+   */
   getTotalExpenses() {
     let totalExpenses = 0;
-    for (let i = 0; i < this.transactions.length; i++) {
-      const transaction = this.transactions[i];
 
+    for (const transaction of this.#transactions) {
       if (transaction.type === "outcome") {
-        totalExpenses = totalExpenses + transaction.amount;
+        totalExpenses += transaction.amount;
       }
     }
 
     return totalExpenses;
   }
 
+  /**
+   * Returns transactions assigned to a category.
+   * @param {string} category - Category to match.
+   * @returns {Transaction[]} Matching transactions.
+   */
   getTransactionsByCategory(category) {
-    let transactions = [];
-    for (let i = 0; i < this.transactions.length; i++) {
-      const transaction = this.transactions[i];
+    const matchingTransactions = [];
+
+    for (const transaction of this.#transactions) {
       if (transaction.category === category) {
-        transactions.push(transaction);
+        matchingTransactions.push(transaction);
       }
     }
-    return transactions;
+
+    return matchingTransactions;
   }
 
+  /**
+   * Calculates the total amount for a category.
+   * @param {string} category - Category to total.
+   * @returns {number} Sum of amounts in the category.
+   */
   getTotalByCategory(category) {
     let total = 0;
 
-    for (let i = 0; i < this.transactions.length; i++) {
-      const transaction = this.transactions[i];
-
+    for (const transaction of this.#transactions) {
       if (transaction.category === category) {
-        total = total + transaction.amount;
+        total += transaction.amount;
       }
     }
 
     return total;
   }
 
+  /**
+   * Returns transactions whose amount is greater than the given amount.
+   * @param {number} amount - Amount threshold.
+   * @returns {Transaction[]} Transactions above the threshold.
+   */
   getTransactionsAboveAmount(amount) {
-    let transactions = [];
+    const matchingTransactions = [];
 
-    for (let i = 0; i < this.transactions.length; i++) {
-      const transaction = this.transactions[i];
-
+    for (const transaction of this.#transactions) {
       if (transaction.amount > amount) {
-        transactions.push(transaction);
+        matchingTransactions.push(transaction);
       }
     }
 
-    return transactions;
+    return matchingTransactions;
   }
+
+  /**
+   * Returns transactions whose amount is below the given amount.
+   * @param {number} amount - Amount threshold.
+   * @returns {Transaction[]} Transactions below the threshold.
+   */
+  getTransactionsBelowAmount(amount) {
+    const matchingTransactions = [];
+
+    for (const transaction of this.#transactions) {
+      if (transaction.amount < amount) {
+        matchingTransactions.push(transaction);
+      }
+    }
+
+    return matchingTransactions;
+  }
+
+  /**
+   * Returns a summary containing balance, income and expenses in that order.
+   * @returns {number[]} Summary values.
+   */
   getSummary() {
-    let summary = [];
-
-    // Summary contains balance, total income and total expenses in that order.
-    summary.push(this.getBalance());
-    summary.push(this.getTotalIncome());
-    summary.push(this.getTotalExpenses());
-
-    return summary;
+    return [
+      this.getBalance(),
+      this.getTotalIncome(),
+      this.getTotalExpenses(),
+    ];
   }
 
+  /**
+   * Filters transactions by an inclusive date range.
+   * @param {Date} startDate - First date in the range.
+   * @param {Date} endDate - Last date in the range.
+   * @returns {Transaction[]} Transactions within the range.
+   */
   getTransactionsByDateRange(startDate, endDate) {
-    let transactions = [];
-    for (let i = 0; i < this.transactions.length; i++) {
-      const transaction = this.transactions[i];
+    this.#validateDateRange(startDate, endDate);
+    const matchingTransactions = [];
+
+    for (const transaction of this.#transactions) {
       if (transaction.date >= startDate && transaction.date <= endDate) {
-        transactions.push(transaction);
+        matchingTransactions.push(transaction);
       }
     }
-    return transactions;
+
+    return matchingTransactions;
   }
 
+  /**
+   * Returns transactions matching a transaction type.
+   * @param {"income"|"outcome"} type - Type to match.
+   * @returns {Transaction[]} Matching transactions.
+   */
   getTransactionsByType(type) {
-    let transactions = [];
-    for (let i = 0; i < this.transactions.length; i++) {
-      const transaction = this.transactions[i];
+    this.#validateType(type);
+    const matchingTransactions = [];
+
+    for (const transaction of this.#transactions) {
       if (transaction.type === type) {
-        transactions.push(transaction);
+        matchingTransactions.push(transaction);
       }
     }
-    return transactions;
+
+    return matchingTransactions;
   }
 
+  /**
+   * Finds the largest expense amount.
+   * @returns {number} Largest expense, or zero if there are no expenses.
+   */
   getLargestExpense() {
     let largestExpense = 0;
 
-    for (let i = 0; i < this.transactions.length; i++) {
-      const transaction = this.transactions[i];
-
-      if (transaction.type === "outcome") {
-        if (transaction.amount > largestExpense) {
-          largestExpense = transaction.amount;
-        }
+    for (const transaction of this.#transactions) {
+      if (
+        transaction.type === "outcome" &&
+        transaction.amount > largestExpense
+      ) {
+        largestExpense = transaction.amount;
       }
     }
 
     return largestExpense;
   }
 
+  /**
+   * Totals transaction amounts for each category.
+   * @returns {Object<string, number>} Category names mapped to totals.
+   */
   getCategorySummary() {
-    let categorySummary = {};
+    const categorySummary = {};
 
-    for (let i = 0; i < this.transactions.length; i++) {
-      const transaction = this.transactions[i];
+    for (const transaction of this.#transactions) {
+      const category = transaction.category;
 
-      if (categorySummary[transaction.category]) {
-        categorySummary[transaction.category] =
-          categorySummary[transaction.category] + transaction.amount;
+      if (Object.hasOwn(categorySummary, category)) {
+        categorySummary[category] += transaction.amount;
       } else {
-        categorySummary[transaction.category] = transaction.amount;
+        categorySummary[category] = transaction.amount;
       }
     }
 
     return categorySummary;
   }
 
+  /**
+   * Finds the category with the highest total transaction amount.
+   * @returns {string} Category name, or an empty string when no categories exist.
+   */
   getLargestExpenseCategory() {
     const categorySummary = this.getCategorySummary();
-
-    if (Object.keys(categorySummary).length === 0) {
-      return "";
-    }
-
     let largestCategory = "";
     let largestAmount = 0;
 
-    for (let category of Object.keys(categorySummary)) {
-      const categoryAmount = categorySummary[category];
-
-      if (categoryAmount > largestAmount) {
-        largestAmount = categoryAmount;
+    for (const [category, amount] of Object.entries(categorySummary)) {
+      if (amount > largestAmount) {
+        largestAmount = amount;
         largestCategory = category;
       }
     }
 
     return largestCategory;
   }
+
+  /**
+   * Calculates the average expense amount.
+   * @returns {number} Average expense, or zero when there are no expenses.
+   */
+  getAverageExpense() {
+    let total = 0;
+    let count = 0;
+
+    for (const transaction of this.#transactions) {
+      if (transaction.type === "outcome") {
+        total += transaction.amount;
+        count += 1;
+      }
+    }
+
+    if (count === 0) {
+      return 0;
+    }
+
+    return total / count;
+  }
+
+  /**
+   * Checks whether the budget contains any transactions.
+   * @returns {boolean} True when at least one transaction exists.
+   */
+  hasTransactions() {
+    return this.#transactions.length > 0;
+  }
 }
-module.exports = Budget;

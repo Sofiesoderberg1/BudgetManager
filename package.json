@@ -1,0 +1,11 @@
+{
+  "name": "budget-manager",
+  "version": "1.0.0",
+  "description": "A reusable JavaScript module for managing personal budget transactions.",
+  "type": "module",
+  "main": "./src/Budget.js",
+  "scripts": {
+    "test": "node ./test-app/TestApp.js"
+  },
+  "license": "MIT"
+}
