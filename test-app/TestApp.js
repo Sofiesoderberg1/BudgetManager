@@ -1,4 +1,4 @@
-const Budget = require("../src/Budget.js");
+import Budget from "../src/Budget.js";
 const budget = new Budget();
 
 budget.addTransaction("Food", -200, "outcome", "food");
@@ -53,7 +53,7 @@ console.log(
 );
 
 
-const assert = require("node:assert/strict");
+import assert from "node:assert/strict";
 
 // Test that removing a transaction keeps the other transactions.
 const removalBudget = new Budget();
@@ -102,3 +102,26 @@ validationBudget.addTransaction("Food", -200, "outcome", "food");
 assert.equal(validationBudget.transactions[0].amount, 200);
 
 console.log("Test passed: description and amount validation.");
+
+
+// Test the additional query methods.
+const queryBudget = new Budget();
+assert.equal(queryBudget.hasTransactions(), false);
+queryBudget.addTransaction("Salary", 1000, "income", "salary");
+queryBudget.addTransaction("Coffee", 5, "outcome", "food");
+queryBudget.addTransaction("Lunch", 15, "outcome", "food");
+assert.equal(queryBudget.hasTransactions(), true);
+assert.equal(queryBudget.getAverageExpense(), 10);
+assert.equal(queryBudget.getTransactionsBelowAmount(10).length, 1);
+
+// Test that invalid date ranges are rejected.
+assert.throws(
+  () => queryBudget.getTransactionsByDateRange(new Date("invalid"), new Date()),
+  /Start date must be a valid Date/,
+);
+assert.throws(
+  () => queryBudget.getTransactionsByDateRange(new Date(2026, 8, 30), new Date(2026, 8, 1)),
+  /Start date must not be after end date/,
+);
+
+console.log("Test passed: additional query methods and date-range validation.");
